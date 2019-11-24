@@ -17,10 +17,10 @@ class NotificationManager():
         self.notifications[self.__class__.last_id] = notification
 
     def get_notification(self, id):
-        return self.notification[id]
+        return self.notifications[id]
 
     def delete_notification(self, id):
-        del self.notification[id]
+        del self.notifications[id]
 
 
 notification_fields = {
@@ -45,7 +45,8 @@ class Notification(Resource):
                 HttpStatus.not_found_404.value,  
                 message="Notification {0} doesn't exist".format(id)) 
  
-    @marshal_with(notification_fields)def get(self, id): 
+    @marshal_with(notification_fields)
+    def get(self, id): 
         self.abort_if_notification_not_found(id) 
         return notification_manager.get_notification(id) 
  
@@ -54,7 +55,8 @@ class Notification(Resource):
         notification_manager.delete_notification(id) 
         return '', HttpStatus.no_content_204.value 
  
-    @marshal_with(notification_fields)   def patch(self, id): 
+    @marshal_with(notification_fields)
+    def patch(self, id): 
         self.abort_if_notification_not_found(id) 
         notification = notification_manager.get_notification(id) 
         parser = reqparse.RequestParser() 
@@ -68,12 +70,42 @@ class Notification(Resource):
             notification.message = args['message'] 
         if 'ttl' in args and args['ttl'] is not None: 
             notification.ttl = args['ttl'] 
-        if 'displayed_times' in args and args['displayed_times']
- is not None: 
+        if 'displayed_times' in args and args['displayed_times'] is not None: 
             notification.displayed_times = args['displayed_times'] 
-        if 'displayed_once' in args and args['displayed_once'] is
- not None: 
+        if 'displayed_once' in args and args['displayed_once'] is not None: 
             notification.displayed_once = args['displayed_once'] 
         return notification 
 
 
+class NotificationList(Resource): 
+    @marshal_with(notification_fields) 
+    def get(self): 
+        return [v for v in
+notification_manager.notifications.values()] 
+ 
+    @marshal_with(notification_fields) 
+    def post(self): 
+        parser = reqparse.RequestParser() 
+        parser.add_argument('message', type=str, required=True, help='Message cannot be blank!') 
+        parser.add_argument('ttl', type=int, required=True,
+help='Time to live cannot be blank!') 
+        parser.add_argument('notification_category', type=str, required=True, help='Notification category cannot be blank!') 
+        args = parser.parse_args() 
+        notification = NotificationModel( 
+            message=args['message'], 
+            ttl=args['ttl'], 
+            creation_date=datetime.now(utc), 
+            notification_category=args['notification_category'] 
+            ) 
+        notification_manager.insert_notification(notification)  
+        return notification, HttpStatus.created_201.value 
+
+
+app = Flask(__name__) 
+service = Api(app) 
+service.add_resource(NotificationList, '/service/notifications/') 
+service.add_resource(Notification, '/service/notifications/<int:id>', endpoint='notification_endpoint') 
+ 
+ 
+if __name__ == '__main__': 
+    app.run(debug=True) 

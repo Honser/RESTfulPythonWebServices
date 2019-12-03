@@ -14,7 +14,7 @@ class  GameSerializer(serializers.Serializer):
         return Game.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance_name)
+        instance.name = validated_data.get('name', instance.name)
         instance.release_date = validated_data.get('release_date',instance.release_date) 
         instance.esrb_rating = validated_data.get('esrb_rating',   instance.esrb_rating) 
         instance.played_once = validated_data.get('played_once',   instance.played_once) 

@@ -56,13 +56,13 @@ class Player(models.Model):
 class PlayerScore(models.Model):
     player = models.ForeignKey(
             Player,
-            related_names='scores',
+            related_name='scores',
             on_delete=models.CASCADE)
     game = models.ForeignKey(
             Game,
             on_delete=models.CASCADE)
     score = models.IntegerField()
-    score_date = models.DateTimeField(()
+    score_date = models.DateTimeField()
 
     class Meta:
         # Order by score (descending)

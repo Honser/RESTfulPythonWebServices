@@ -77,13 +77,22 @@ WSGI_APPLICATION = 'games_service.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
+DATABASES = { 
+    'default': { 
+        'ENGINE': 'django.db.backends.postgresql', 
+        # Replace django_games with your desired database name 
+        'NAME': 'django_games', 
+        # Replace username with your desired user name 
+        'USER': 'noah',
+        # Replace password with your desired password 
+        'PASSWORD': 'qwer',
+        # Replace 127.0.0.1 with the PostgreSQL host 
+        'HOST': '127.0.0.1', 
+        # Replace 5432 with the PostgreSQL configured port 
+        # in case you aren't using the default port 
+        'PORT': '5432', 
+    } 
+} 
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
